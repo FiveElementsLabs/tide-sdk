@@ -97,6 +97,18 @@ export default function Home() {
           )}
         </div>
 
+        <div className="flex flex-row mx-auto gap-5">
+          {isConnected ? (
+            <p className="text-2xl font-bold text-center lg:text-left">
+              {address}
+            </p>
+          ) : (
+            <p className="text-2xl font-bold text-center lg:text-left">
+              Not Connected
+            </p>
+          )}
+        </div>
+
         {address && (
           <button
             className="mb-4 text-4xl tracking-wide font-bold text-center lg:text-left p-8 bg-slate-700 rounded-2xl grid place-content-center
@@ -115,18 +127,6 @@ export default function Home() {
             Complete Referral
           </button>
         )}
-
-        <div className="flex flex-row mx-auto gap-5">
-          {isConnected ? (
-            <p className="text-2xl font-bold text-center lg:text-left">
-              {address}
-            </p>
-          ) : (
-            <p className="text-2xl font-bold text-center lg:text-left">
-              Not Connected
-            </p>
-          )}
-        </div>
 
         <div className="flex flex-row mx-auto gap-5">
           {error && (
