@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { isAddress } from 'viem';
 
-import { TideSDKConfig, Errors, Actions } from './types';
+import { TideSDKConfig, SdkErrors, Actions } from './types';
 import { TIDE_BASE_URL } from './constants';
 import { parseJwt } from './utils';
 
@@ -16,7 +16,7 @@ export function initialize(config: TideSDKConfig) {
   const expirationDate = parseJwt(authToken).exp;
   const now = new Date().getTime() / 1_000;
 
-  if (expirationDate < now) throw new Error(Errors.TOKEN_VALIDATION_ERROR);
+  if (expirationDate < now) throw new Error(SdkErrors.TOKEN_EXPIRED);
 }
 
 /**
@@ -27,8 +27,8 @@ export function initialize(config: TideSDKConfig) {
  * the `tide_ref` query parameter of the Tide referral campaign.
  */
 export async function identify(address: string, referralCode: string) {
-  if (!authToken) throw new Error(Errors.MISSING_TOKEN);
-  if (!isAddress(address)) throw new Error(Errors.INVALID_ADDRESS);
+  if (!authToken) throw new Error(SdkErrors.MISSING_TOKEN);
+  if (!isAddress(address)) throw new Error(SdkErrors.INVALID_ADDRESS);
 
   try {
     await axios.request({
@@ -45,7 +45,14 @@ export async function identify(address: string, referralCode: string) {
       }),
     });
   } catch (err) {
-    console.error(err);
+    if (axios.isAxiosError(err)) {
+      if (err.response?.status === 400)
+        throw new Error(`Bad request: ${err.response.data.message}`);
+      if (err.response?.status === 401)
+        throw new Error(`Unauthorized: ${err.response.data.message}`);
+      if (err.response?.status === 500)
+        throw new Error(`Internal server error: ${err.response.data.message}`);
+    }
   }
 }
 
@@ -56,13 +63,16 @@ export async function identify(address: string, referralCode: string) {
  * on your site. For example, if you are running a referral campaign where users
  * are to be considered referred when they mint an NFT, this function should be
  * called when the user successfully mints the NFT.
+ *
+ * Returns `true` if the referral was successfully completed.
+ * On failure, an error will be thrown with the reason for failure.
  */
-export async function completeReferral(address: string) {
-  if (!authToken) throw new Error(Errors.MISSING_TOKEN);
-  if (!isAddress(address)) throw new Error(Errors.INVALID_ADDRESS);
+export async function completeReferral(address: string): Promise<boolean> {
+  if (!authToken) throw new Error(SdkErrors.MISSING_TOKEN);
+  if (!isAddress(address)) throw new Error(SdkErrors.INVALID_ADDRESS);
 
   try {
-    const res = await axios.request({
+    await axios.request({
       url: `${TIDE_BASE_URL}/referral/track`,
       method: 'POST',
       headers: {
@@ -74,8 +84,16 @@ export async function completeReferral(address: string) {
         userAddress: address,
       }),
     });
+    return true;
   } catch (err) {
-    // Check that the referral is completed -> user address and referralCode mapping might not match
-    console.error(err);
+    if (axios.isAxiosError(err)) {
+      if (err.response?.status === 400)
+        throw new Error(`Bad request: ${err.response.data.message}`);
+      if (err.response?.status === 401)
+        throw new Error(`Unauthorized: ${err.response.data.message}`);
+      if (err.response?.status === 500)
+        throw new Error(`Internal server error: ${err.response.data.message}`);
+    }
+    return false;
   }
 }
