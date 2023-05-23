@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { isAddress } from 'viem';
 
-import { TideSDKConfig, SdkErrors, Actions } from './types';
+import { TideSDKConfig, SdkError, Actions } from './types';
 import { TIDE_BASE_URL } from './constants';
 import { parseJwt } from './utils';
 
@@ -16,7 +16,7 @@ export function initialize(config: TideSDKConfig) {
   const expirationDate = parseJwt(authToken).exp;
   const now = new Date().getTime() / 1_000;
 
-  if (expirationDate < now) throw new Error(SdkErrors.TOKEN_EXPIRED);
+  if (expirationDate < now) throw new Error(SdkError.TOKEN_EXPIRED);
 }
 
 /**
@@ -27,8 +27,8 @@ export function initialize(config: TideSDKConfig) {
  * the `tide_ref` query parameter of the Tide referral campaign.
  */
 export async function identify(address: string, referralCode: string) {
-  if (!authToken) throw new Error(SdkErrors.MISSING_TOKEN);
-  if (!isAddress(address)) throw new Error(SdkErrors.INVALID_ADDRESS);
+  if (!authToken) throw new Error(SdkError.MISSING_TOKEN);
+  if (!isAddress(address)) throw new Error(SdkError.INVALID_ADDRESS);
 
   try {
     await axios.request({
@@ -46,8 +46,6 @@ export async function identify(address: string, referralCode: string) {
     });
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      if (err.response?.status === 400)
-        throw new Error(`Bad request: ${err.response.data.message}`);
       if (err.response?.status === 401)
         throw new Error(`Unauthorized: ${err.response.data.message}`);
       if (err.response?.status === 500)
@@ -68,8 +66,8 @@ export async function identify(address: string, referralCode: string) {
  * On failure, an error will be thrown with the reason for failure.
  */
 export async function completeReferral(address: string): Promise<boolean> {
-  if (!authToken) throw new Error(SdkErrors.MISSING_TOKEN);
-  if (!isAddress(address)) throw new Error(SdkErrors.INVALID_ADDRESS);
+  if (!authToken) throw new Error(SdkError.MISSING_TOKEN);
+  if (!isAddress(address)) throw new Error(SdkError.INVALID_ADDRESS);
 
   try {
     await axios.request({
