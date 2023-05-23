@@ -15,7 +15,7 @@
     "url": "https://github.com/FiveElementsLabs/tide-sdk.git",
     "directory": "sdk"
   },
-  "author": "FiveElementsLabs <info@fiveelementslabs.com>",
+  "author": "FiveElementsLabs <developers@fiveelementslabs.com>",
   "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -8,7 +8,7 @@ To get started, follow these instructions:
 
 ```shell
 # Clone the repository
-git clone https://github.com/tide-sdk
+git clone https://github.com/FiveElementsLabs/tide-sdk.git
 
 # Change directory
 cd tide-sdk/sdk
