@@ -10,6 +10,11 @@
     "web3",
     "sdk"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FiveElementsLabs/tide-sdk.git",
+    "directory": "sdk"
+  },
   "author": "FiveElementsLabs <info@fiveelementslabs.com>",
   "license": "MIT",
   "scripts": {
