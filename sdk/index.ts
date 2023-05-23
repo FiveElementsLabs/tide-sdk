@@ -1,3 +1,5 @@
-export async function test() {
-  console.warn('AYOOOOOOOO???');
-}
+import * as referrals from './src/referrals';
+
+export default {
+  referrals,
+};
