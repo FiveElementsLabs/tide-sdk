@@ -1,31 +1,44 @@
 import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
-import TideSDK from "tide-sdk";
 import { useRouter } from "next/router";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import confetti from "canvas-confetti";
 
+import TideSDK from "tide-sdk";
+import { TideSDKConfig } from "tide-sdk/dist/src/types";
+
 const inter = Inter({ subsets: ["latin"] });
 
-const AUTH_TOKEN =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZWZlcnJhbENhbXBhaWduSWQiOiIzZmFlOWRlOS04N2YxLTRlYjYtOTc1OS1kYzMzYzI1MzM0ZjQiLCJpYXQiOjE2ODQzMTQ2NTMsImV4cCI6MTY4NjkwNjY1M30.r3i70fYjqASpBinETWhk3gv7cuQHdUls4-kgW1qKmAA";
+const SdkConfig: TideSDKConfig = {
+  // You can find this value in the Tideprotocol.xyz campaign confirmation page
+  // after creating a new referral campaign (see the documentation for more details)
+  // https://fiveelementslabs.gitbook.io/tide/resources/tide-referral-sdk
+  AUTH_TOKEN:
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZWZlcnJhbENhbXBhaWduSWQiOiIzZmFlOWRlOS04N2YxLTRlYjYtOTc1OS1kYzMzYzI1MzM0ZjQiLCJpYXQiOjE2ODQzMTQ2NTMsImV4cCI6MTY4NjkwNjY1M30.r3i70fYjqASpBinETWhk3gv7cuQHdUls4-kgW1qKmAA",
+
+  // You don't need to set this custom value when using the SDK in production
+  TIDE_BASE_URL: "http://localhost:8000",
+};
 
 export default function Home() {
   const router = useRouter();
 
+  const { connect } = useConnect({ connector: new InjectedConnector() });
+  const { disconnect } = useDisconnect();
+  const { address, isConnected } = useAccount();
+
   const [error, setError] = useState<string | null>(null);
 
+  // This is the referral code that your users will have on your site's URL
+  // e.g. https://app.example.com?tideRef=123456 (123456 is the referral code)
+  // You can use the `identify` SDK method to bind this referral code to the user's address
   const { tideRef } = router.query;
 
-  const { address, isConnected } = useAccount();
-  const { connect } = useConnect({
-    connector: new InjectedConnector(),
-  });
-  const { disconnect } = useDisconnect();
-
+  // The SDK needs to be initialized before using it
+  // This needs to be done only once in the app's lifecycle
   useEffect(() => {
-    TideSDK.referrals.initialize({ AUTH_TOKEN });
+    TideSDK.referrals.initialize(SdkConfig);
   }, []);
 
   useEffect(() => {
@@ -42,7 +55,7 @@ export default function Home() {
       particleCount: 200,
       spread: 70,
       origin: { y: 0.5 },
-      colors: ["#ff0000", "#00ff00", "#0000ff"], // Customize the colors of the confetti particles
+      colors: ["#ff0000", "#00ff00", "#0000ff"],
     });
   };
 

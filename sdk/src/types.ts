@@ -8,6 +8,7 @@ export enum SdkError {
 
 export interface TideSDKConfig {
   AUTH_TOKEN: string;
+  TIDE_BASE_URL?: string;
 }
 
 export enum Actions {

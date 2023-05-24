@@ -2,16 +2,18 @@ import axios from 'axios';
 import { isAddress } from 'viem';
 
 import { TideSDKConfig, SdkError, Actions } from './types';
-import { TIDE_BASE_URL } from './constants';
+import { DEFAULT_TIDE_BASE_URL } from './constants';
 import { parseJwt } from './utils';
 
 let authToken: string | null = null;
+let tideBaseUrl: string = DEFAULT_TIDE_BASE_URL;
 
 /**
  * ## Initialize the Tide SDK with the provided config.
  */
 export function initialize(config: TideSDKConfig) {
   authToken = config.AUTH_TOKEN;
+  if (config.TIDE_BASE_URL) tideBaseUrl = config.TIDE_BASE_URL;
 
   const expirationDate = parseJwt(authToken).exp;
   const now = new Date().getTime() / 1_000;
@@ -24,7 +26,7 @@ export function initialize(config: TideSDKConfig) {
  *
  * This function should be called every time a new user lands on your site
  * and connects their wallet. The `referralCode` property is the value provided in
- * the `tide_ref` query parameter of the Tide referral campaign.
+ * the `tideRef` query parameter of the Tide referral campaign.
  */
 export async function identify(address: string, referralCode: string) {
   if (!authToken) throw new Error(SdkError.MISSING_TOKEN);
@@ -32,7 +34,7 @@ export async function identify(address: string, referralCode: string) {
 
   try {
     await axios.request({
-      url: `${TIDE_BASE_URL}/referral/track`,
+      url: `${tideBaseUrl}/referral/track`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +73,7 @@ export async function completeReferral(address: string): Promise<boolean> {
 
   try {
     await axios.request({
-      url: `${TIDE_BASE_URL}/referral/track`,
+      url: `${tideBaseUrl}/referral/track`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

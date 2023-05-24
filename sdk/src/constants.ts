@@ -1,2 +1,1 @@
-// export const TIDE_BASE_URL = 'https://api-prod.tideprotocol.xyz';
-export const TIDE_BASE_URL = 'https://api-dev.tideprotocol.xyz';
+export const DEFAULT_TIDE_BASE_URL = 'https://api-prod.tideprotocol.xyz';
