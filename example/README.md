@@ -8,13 +8,22 @@ javascript web technology of your choice.
 
 ## Getting Started
 
-To get started with the SDK, follow these simple steps:
+This example uses the SDK from a local build in the `sdk` directory.
 
-1. Install the SDK on your site using your preferred package manager (`npm install tide-sdk`)
-2. Create a new referral campaign on [tideprotocol.xyz](https://tideprotocol.xyz)
-3. Copy the campaign "Referral API Token" from the campaign settings page
-4. Initialize the SDK in your app using the provided token
-5. Track referrals and other events in real-time
+To get started with the example, follow these steps:
+
+1. Navigate to the `sdk` directory, and run `yarn install` to install the dependencies.
+2. Build the SDK locally by running `yarn build`.
+3. Now navigate to the `example` directory, and run `yarn install` to install the dependencies.
+4. Run `yarn dev` to start the example app.
+5. Open your browser at `http://localhost:3000` to see the example app in action.
+
+You can run all these instructions in one go by pasting this into your terminal
+from the root of this repository:
+
+```shell
+cd sdk && yarn install && yarn build && cd ../example && yarn install && yarn dev
+```
 
 ## Documentation
 
